@@ -24,6 +24,7 @@ public class WebService {
     private ArrayList allSings;
 
     public WebService() throws MalformedURLException {
+        allSings = new ArrayList();
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
@@ -45,7 +46,6 @@ public class WebService {
     }
 
     public void Get() throws IOException {
-        allSings = new ArrayList();
         connection.setRequestMethod("GET");
         InputStream responseBody = connection.getInputStream();
         InputStreamReader responseBodyReader = new InputStreamReader(responseBody, "UTF-8");
