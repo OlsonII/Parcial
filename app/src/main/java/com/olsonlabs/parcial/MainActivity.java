@@ -5,30 +5,31 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
-import android.widget.LinearLayout;
+import android.util.Log;
 import android.widget.Toast;
-
 import java.io.IOException;
-import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
 
     RecyclerView rv;
-
+    public static ArrayList staticSings = new ArrayList<>();
+    Adapter adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        rv = (RecyclerView) findViewById(R.id.rv);
+        rv = findViewById(R.id.rv);
         rv.setHasFixedSize(true);
-        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-        rv.setLayoutManager(layoutManager);
 
         try {
             WebService webService = new WebService();
-//            webService.Get();
-            Adapter adapter = new Adapter(webService.getAllSings());
+            ArrayList list = webService.execute("").get();
+            Log.d("size", String.valueOf(list.size()));
+            adapter = new Adapter(list);
             rv.setAdapter(adapter);
+            rv.setLayoutManager(new LinearLayoutManager(this));
             if(webService.isConected()) {
                 Toast.makeText(this, "Conectado", Toast.LENGTH_SHORT);
             }
@@ -36,6 +37,10 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this,  "Error", Toast.LENGTH_SHORT);
             }
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
             e.printStackTrace();
         }
     }
