@@ -25,10 +25,21 @@ public class Adapter extends RecyclerView.Adapter<Adapter.MyViewHolder> {
         // each data item is just a string in this case
         TextView title;
         TextView duration;
+        TextView artist;
+
         public MyViewHolder(View itemView) {
             super(itemView);
             title = itemView.findViewById(R.id.title);
             duration = itemView.findViewById(R.id.duration);
+            artist = itemView.findViewById(R.id.artist);
+        }
+
+        public TextView getArtist() {
+            return artist;
+        }
+
+        public void setArtist(TextView artist) {
+            this.artist = artist;
         }
 
         public TextView getTitle() {
@@ -60,7 +71,9 @@ public class Adapter extends RecyclerView.Adapter<Adapter.MyViewHolder> {
     public void onBindViewHolder(MyViewHolder holder, int position) {
        Sing sing = list.get(position);
        holder.getTitle().setText(sing.getTitle());
-       holder.getDuration().setText(sing.getDuration()+"");
+       holder.getArtist().setText(sing.getSinger());
+//       double time = Double.parseDouble( String.valueOf(sing.getDuration()))/60;
+       holder.getDuration().setText(String.valueOf(sing.getDuration()));
     }
 
     // Return the size of your dataset (invoked by the layout manager)

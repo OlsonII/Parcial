@@ -103,8 +103,20 @@ public class WebService extends AsyncTask<String, Object, ArrayList> {
                             Log.d("sing Title", sing.getTitle());
                         }else if (name.equalsIgnoreCase("duration")){
                             sing.setDuration(Integer.parseInt(jsonReader.nextString()));
-                            sings.add(sing);
-                        }else {
+                        }else if(name.equalsIgnoreCase("artist")){
+                            jsonReader.beginObject();
+                            while (jsonReader.hasNext()){
+                                String artistName = jsonReader.nextName();
+                                if(artistName.equalsIgnoreCase("name")){
+                                    sing.setSinger(jsonReader.nextString());
+                                    sings.add(sing);
+                                }else{
+                                    jsonReader.skipValue();
+                                }
+                            }
+                            jsonReader.endObject();
+                        }
+                        else {
                             jsonReader.skipValue();
                         }
                     }
