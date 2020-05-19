@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">Parcial</string>
+    <string name="app_name">Canciones</string>
+    <string name="agregar_cancion">Agregar cancion</string>
 </resources>
