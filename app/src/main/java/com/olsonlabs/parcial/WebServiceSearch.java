@@ -3,6 +3,7 @@ package com.olsonlabs.parcial;
 import android.os.AsyncTask;
 import android.util.JsonReader;
 import android.util.Log;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -10,21 +11,23 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
 
-public class WebService extends AsyncTask<String, Object, ArrayList> {
+public class WebServiceSearch extends AsyncTask<String, String, Sing> {
 
-    private final String URL = "https://api.deezer.com/playlist/93489551/tracks";
-    private URL dezzerUrl = new URL(URL);
+    private String URL = "https://api.deezer.com/search?q=";
+    private java.net.URL dezzerUrl = new URL(URL);
     private HttpsURLConnection connection;
     private boolean conected = false;
-    private ArrayList allSings;
+    private Sing sing;
 
 
 
-    public WebService() throws MalformedURLException {
-        allSings = new ArrayList();
+    public WebServiceSearch(String singName) throws MalformedURLException {
+        URL = URL+singName;
+        dezzerUrl = new URL(URL);
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
@@ -41,46 +44,41 @@ public class WebService extends AsyncTask<String, Object, ArrayList> {
     }
 
     @Override
-    protected ArrayList doInBackground(String... strings) {
+    protected Sing doInBackground(String... strings) {
         try {
-            allSings = Get();
+            sing = Get();
         } catch (ProtocolException e) {
             e.printStackTrace();
         }
-        return allSings;
+        return sing;
     }
 
     @Override
-    protected void onPostExecute(ArrayList arrayList) {
-        super.onPostExecute(arrayList);
-//        Adapter adapter = new Adapter(arrayList);
-        /*MainActivity mainActivity = new MainActivity();
-        mainActivity.rv.setAdapter(new Adapter(arrayList));
-        mainActivity.rv.setLayoutManager(new LinearLayoutManager(mainActivity));*/
+    protected void onPostExecute(Sing sing) {
+        super.onPostExecute(sing);
     }
 
-    public ArrayList Get() throws ProtocolException {
-        allSings = new ArrayList();
+    public Sing Get() throws ProtocolException {
+        sing = new Sing();
         connection.setRequestMethod("GET");
         InputStream responseBody = null;
         try {
             responseBody = connection.getInputStream();
             InputStreamReader responseBodyReader = new InputStreamReader(responseBody, "UTF-8");
             JsonReader jsonReader = new JsonReader(responseBodyReader);
-            allSings = parseSingJson(jsonReader);
+            sing = parseSingJson(jsonReader);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return  allSings;
+        return  sing;
     }
 
     public boolean isConected() {
         return conected;
     }
 
-    public ArrayList<Sing> parseSingJson(JsonReader jsonReader) throws IOException {
+    public Sing parseSingJson(JsonReader jsonReader) throws IOException {
         ArrayList<Sing> sings = new ArrayList<>();
-        Sing sing;
         jsonReader.beginObject();
         while (jsonReader.hasNext()){
             String data = jsonReader.nextName();
@@ -102,7 +100,7 @@ public class WebService extends AsyncTask<String, Object, ArrayList> {
                                 String artistName = jsonReader.nextName();
                                 if(artistName.equalsIgnoreCase("name")){
                                     sing.setSinger(jsonReader.nextString());
-                                    sings.add(sing);
+                                    return sing;
                                 }else{
                                     jsonReader.skipValue();
                                 }
@@ -121,6 +119,6 @@ public class WebService extends AsyncTask<String, Object, ArrayList> {
             }
         }
         jsonReader.endObject();
-        return sings;
+        return sing;
     }
 }

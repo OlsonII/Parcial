@@ -7,13 +7,20 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.net.MalformedURLException;
+import java.util.concurrent.ExecutionException;
 
 public class FormActivity extends AppCompatActivity {
 
     EditText titleEditText;
-    EditText singerEditText;
-    EditText durationEditText;
+    TextView singerEditText;
+    TextView durationEditText;
+    Sing sing;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,21 +42,29 @@ public class FormActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             // Respond to a click on the "Save" menu option
             case R.id.action_save:
-                insertSing();
-                finish();
+                if(sing != null){
+                    insertSing();
+                    finish();
+                }else {
+                    Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
+                }
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void searchSing(View view) throws MalformedURLException, ExecutionException, InterruptedException {
+        WebServiceSearch webServiceSearch = new WebServiceSearch(titleEditText.getText().toString());
+        sing = webServiceSearch.execute("").get();
+        titleEditText.setText(sing.getTitle());
+        singerEditText.setText(sing.getSinger());
+        durationEditText.setText(sing.getDuration()+"");
     }
 
 
 
     public void insertSing(){
         Log.d("size new", MainActivity.singLists.size()+"");
-        Sing sing = new Sing();
-        sing.setTitle(titleEditText.getText().toString());
-        sing.setSinger(singerEditText.getText().toString());
-        sing.setDuration(Integer.parseInt(durationEditText.getText().toString()));
         MainActivity.singLists.add(sing);
         Log.d("size new", MainActivity.singLists.size()+"");
     }
